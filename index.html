@@ -305,11 +305,12 @@
       display: flex;
       gap: 16px;
       overflow-x: auto;
-      scroll-behavior: smooth;
+      scroll-behavior: auto;
       -webkit-overflow-scrolling: touch;
       cursor: grab;
       scrollbar-width: none;
       padding: 6px 14px;
+      will-change: scroll-position;
     }
     .film-scroll-container::-webkit-scrollbar {
       display: none;
@@ -953,7 +954,7 @@
       if (!container) return;
 
       const filmBrands = ['KODAK • 400TX', 'FUJI • PRO400', 'KODAK • GOLD200', 'PORTRA • 160', 'ILFORD • HP5', 'AGFA • VISTA'];
-      const maxScan = 65;
+      const maxScan = 50;
 
       for (let i = 1; i <= maxScan; i++) {
         const num3 = String(i).padStart(3, '0');
@@ -967,16 +968,27 @@
         img.alt = `Hai đứa iu nhao ${num3}`;
         img.loading = 'eager';
 
+        // Đa tầng dự phòng định dạng ảnh
+        const candidateUrls = [
+          `./Vintage_${num3}.jpg`,
+          `./Vintage_${num3}.JPG`,
+          `./Vintage_${i}.jpg`,
+          `./Vintage_${i}.JPG`,
+          `./TUYEN_LAN_${((i - 1) % 15) + 1}.jpg`,
+          `./TUYEN_LAN_${((i - 1) % 15) + 1}.JPG`
+        ];
+
+        let tryIndex = 0;
         img.onerror = function() {
-          if (!this.dataset.fallbackTried) {
-            this.dataset.fallbackTried = 'true';
-            this.src = `./Vintage_${i}.jpg`;
+          tryIndex++;
+          if (tryIndex < candidateUrls.length) {
+            this.src = candidateUrls[tryIndex];
           } else {
             frame.remove();
           }
         };
 
-        img.src = `./Vintage_${num3}.jpg`;
+        img.src = candidateUrls[0];
 
         frame.addEventListener('click', () => {
           openLightbox(img.currentSrc || img.src);
@@ -991,46 +1003,78 @@
         container.appendChild(frame);
       }
 
+      // Xử lý kéo thả bằng chuột trên Desktop
       let isDown = false;
-      let startX, scrollLeft;
+      let startX, scrollLeftVal;
 
       container.addEventListener('mousedown', (e) => {
         isDown = true;
         vintageAutoRoll = false;
         startX = e.pageX - container.offsetLeft;
-        scrollLeft = container.scrollLeft;
+        scrollLeftVal = container.scrollLeft;
       });
+
       container.addEventListener('mouseleave', () => { 
         isDown = false; 
+        currentScrollPos = container.scrollLeft;
         vintageAutoRoll = true;
       });
+
       container.addEventListener('mouseup', () => { 
         isDown = false; 
+        currentScrollPos = container.scrollLeft;
         vintageAutoRoll = true;
       });
+
       container.addEventListener('mousemove', (e) => {
         if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - container.offsetLeft;
-        const walk = (x - startX) * 1.6;
-        container.scrollLeft = scrollLeft - walk;
+        const walk = (x - startX) * 1.5;
+        container.scrollLeft = scrollLeftVal - walk;
+        currentScrollPos = container.scrollLeft;
       });
 
-      container.addEventListener('touchstart', () => { vintageAutoRoll = false; }, { passive: true });
-      container.addEventListener('touchend', () => { 
-        setTimeout(() => { vintageAutoRoll = true; }, 1200); 
+      // Tạm dừng khi chạm vuốt trên Mobile
+      container.addEventListener('touchstart', () => { 
+        vintageAutoRoll = false; 
       }, { passive: true });
+
+      container.addEventListener('touchend', () => { 
+        currentScrollPos = container.scrollLeft;
+        setTimeout(() => { vintageAutoRoll = true; }, 1500); 
+      }, { passive: true });
+
+      container.addEventListener('scroll', () => {
+        if (!vintageAutoRoll) {
+          currentScrollPos = container.scrollLeft;
+        }
+      }, { passive: true });
+
+      // Biến lưu vị trí scroll dạng số thực để không bị trình duyệt làm tròn về 0 khi cộng số thập phân
+      let currentScrollPos = container.scrollLeft || 0;
+      const rollSpeed = 0.85; // Tốc độ trôi êm ái
 
       function autoRollLoop() {
         if (vintageAutoRoll && container) {
-          container.scrollLeft += 0.9;
-          if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 2) {
-            container.scrollLeft = 0;
+          currentScrollPos += rollSpeed;
+          const maxScroll = container.scrollWidth - container.clientWidth;
+
+          if (maxScroll > 5) {
+            if (currentScrollPos >= maxScroll - 1) {
+              currentScrollPos = 0;
+            }
+            container.scrollLeft = currentScrollPos;
           }
         }
         requestAnimationFrame(autoRollLoop);
       }
-      requestAnimationFrame(autoRollLoop);
+
+      // Đợi ảnh nạp kích thước khung rồi kích hoạt chạy liên tục
+      setTimeout(() => {
+        currentScrollPos = container.scrollLeft;
+        requestAnimationFrame(autoRollLoop);
+      }, 500);
     }
 
     initVintageFilmStrip();
@@ -1385,6 +1429,47 @@
         }
       });
     }
+
+    // ==============================================
+    // TỰ ĐỘNG TẮT NHẠC KHI RỜI / ĐÓNG TRANG HOẶC CHUYỂN TAB
+    // ==============================================
+    let wasPlayingBeforeHidden = false;
+
+    // 1. Khi chuyển tab, thu nhỏ trình duyệt, khóa màn hình hoặc chuyển app
+    document.addEventListener('visibilitychange', () => {
+      if (!bgMusic) return;
+      if (document.hidden) {
+        if (isPlaying) {
+          bgMusic.pause();
+          wasPlayingBeforeHidden = true;
+          setMusicPlayingState(false);
+        }
+      } else {
+        if (wasPlayingBeforeHidden) {
+          bgMusic.play().then(() => {
+            setMusicPlayingState(true);
+          }).catch(() => {});
+          wasPlayingBeforeHidden = false;
+        }
+      }
+    });
+
+    // 2. Khi đóng tab, tắt web hoặc điều hướng sang trang khác (hỗ trợ tốt trên iOS Safari & Android)
+    window.addEventListener('pagehide', () => {
+      if (bgMusic) {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+        setMusicPlayingState(false);
+      }
+    });
+
+    // 3. Sự kiện dự phòng trước khi đóng trang trên trình duyệt máy tính
+    window.addEventListener('beforeunload', () => {
+      if (bgMusic) {
+        bgMusic.pause();
+        setMusicPlayingState(false);
+      }
+    });
 
     // ==============================================
     // HỘP MỪNG CƯỚI CHÚ RỂ MẠNH TUYÊN & TẢI QR
