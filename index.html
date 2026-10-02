@@ -584,7 +584,7 @@
         </div>
         <div class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-wedding-red inline-block"></span>
-          <span><strong>18/10:</strong> Thành Hôn (14h)</span>
+          <span><strong>18/10:</strong> Thành Hôn (15h)</span>
         </div>
       </div>
 
@@ -672,7 +672,7 @@
                 <i class="fa-solid fa-ring text-[10px]"></i>
                 LỄ THÀNH HÔN
               </span>
-              <span class="text-xs font-bold text-amber-700">14:00 CHIỀU</span>
+              <span class="text-xs font-bold text-amber-700">15:00 CHIỀU</span>
             </div>
             <p class="text-xs font-bold text-gray-900">Chủ Nhật, ngày 18/10/2026</p>
             <p class="text-[10px] text-gray-500 font-medium mb-2">(Tức ngày 09/09 Âm Lịch)</p>
@@ -726,17 +726,7 @@
   <!-- 9. FORM LỜI CHÚC & XÁC NHẬN THAM DỰ - GỬI ĐẾN TUYÊN -->
   <section id="rsvpSection" class="py-10 bg-wedding-creamLight border-t border-wedding-gold/30 px-4">
     <div class="max-w-sm md:max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl double-border-gold" data-aos="fade-up">
-      <h2 class="font-script text-4xl text-wedding-red text-center mb-1">Gửi Lời Chúc Đến Tuyên</h2>
-      <p class="text-gray-500 text-[11px] text-center mb-5">Xác nhận tham dự để Tuyên chuẩn bị tiếp đón bạn thật chu đáo nhé!</p>
-
-      <form id="rsvpForm" class="space-y-4">
-        <div>
-          <label class="block text-[11px] font-semibold uppercase text-gray-700 mb-1">Tên của bạn *</label>
-          <input type="text" id="guestName" required placeholder="Họ và tên của bạn" 
-                 class="w-full px-3.5 py-2 border border-wedding-gold/40 rounded-xl focus:outline-none focus:border-wedding-red text-xs bg-wedding-cream/30">
-        </div>
-
-        <!-- 2 TÙY CHỌN THAM DỰ: NGÀY BÁO HỶ & CỐ GẮNG SẮP XẾP ĐẾN -->
+        <!-- 3 TÙY CHỌN THAM DỰ: NGÀY BÁO HỶ, LỄ THÀNH HÔN & CỐ GẮNG SẮP XẾP ĐẾN -->
         <div>
           <label class="block text-[11px] font-semibold uppercase text-gray-700 mb-2">Bạn sẽ đến chung vui chứ? *</label>
           <div class="space-y-2">
@@ -750,7 +740,17 @@
               <span class="text-[10px] font-semibold">✓ Chắc Chắn Đến</span>
             </label>
 
-            <!-- 2. Mình sẽ cố gắng sắp xếp đến -->
+            <!-- 2. Lễ Thành Hôn (Mới thêm) -->
+            <label class="session-card cursor-pointer border-2 border-gray-200 bg-white text-gray-700 p-2.5 rounded-xl text-center transition-all flex items-center justify-between px-3 shadow-xs hover:border-wedding-red">
+              <input type="radio" name="weddingSession" value="Lễ Thành Hôn (15h Chiều, Chủ Nhật ngày 18-10)" class="hidden">
+              <div class="text-left leading-tight">
+                <span class="text-[11px] font-bold uppercase tracking-wider block">Lễ Thành Hôn (15h Chiều)</span>
+                <span class="text-[10px] text-gray-400">Chủ Nhật, ngày 18/10/2026</span>
+              </div>
+              <span class="text-[10px] font-semibold text-gray-500">Tham Dự</span>
+            </label>
+
+            <!-- 3. Mình sẽ cố gắng sắp xếp đến -->
             <label class="session-card cursor-pointer border-2 border-gray-200 bg-white text-gray-700 p-2.5 rounded-xl text-center transition-all flex items-center justify-between px-3 shadow-xs hover:border-wedding-red">
               <input type="radio" name="weddingSession" value="Mình sẽ cố gắng sắp xếp đến" class="hidden">
               <div class="text-left leading-tight">
