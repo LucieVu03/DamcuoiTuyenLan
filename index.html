@@ -715,7 +715,7 @@
     </div>
   </section>
 
-  <!-- 8. NHẬT KÝ YÊU THƯƠNG: SỔ LÒ XO VUỐT NGANG -->
+  <!-- 8. NHẬT KÝ YÊU THƯƠNG: SỔ LÒ XO VUỐT NGANG (HIỂN THỊ CÁC ẢNH CÓ TÊN NK_) -->
   <section class="py-8 px-4 max-w-sm md:max-w-md mx-auto" data-aos="fade-up" data-aos-duration="1000">
     <div class="text-center mb-5">
       <h2 class="font-script text-4xl text-wedding-red mb-0.5">Nhật Ký Yêu Thương</h2>
@@ -799,7 +799,7 @@
         <div>
           <label class="block text-[11px] font-semibold uppercase text-gray-700 mb-1">Lời chúc mừng đến Tuyên & Lan</label>
           <textarea id="guestWishes" rows="2" 
-                    placeholder="Chúc 2 bạn hạnh phúc viên mãn trăm năm"
+                    placeholder="Chúc 2 bạn hạnh phúc viên mãn trăm năm" 
                     class="w-full px-3.5 py-2 border border-wedding-gold/40 rounded-xl focus:outline-none focus:border-wedding-red text-xs bg-wedding-cream/30 placeholder:text-gray-400/80 placeholder:italic"></textarea>
         </div>
 
@@ -816,7 +816,7 @@
   <section class="py-10 overflow-hidden w-full" data-aos="fade-up" data-aos-duration="1000">
     <div class="text-center px-4 mb-4">
       <div class="flex items-center justify-center gap-2 mb-1">
-        <span class="text-wedding-gold text-xs">🎞️️</span>
+        <span class="text-wedding-gold text-xs">🎞</span>
         <p class="font-serif text-[10px] tracking-[0.25em] text-wedding-gold uppercase font-bold">Vintage Film Roll</p>
         <span class="text-wedding-gold text-xs">🎞️</span>
       </div>
@@ -852,10 +852,10 @@
 
       <div class="relative z-10 h-6 w-[1px] bg-wedding-red/20"></div>
 
-      <!-- PHONG BÌ NGANG MỪNG CƯỚI CHÚ RỂ -->
+      <!-- PHONG BÌ NGANG MỪNG CƯỚI CHÚ RỂ (ĐÃ TĂNG KÍCH THƯỚC THÊM 25%) -->
       <button id="bottomGiftBtn" class="relative z-10 flex flex-col items-center justify-end px-2 py-0.5 bg-transparent border-0 shadow-none outline-none active:scale-95 transition-transform cursor-pointer">
         <div class="h-9 flex items-center justify-center">
-          <div class="wiggle-pause-animate w-10 h-7 bg-wedding-red rounded-[3px] relative border border-red-800 shadow-md flex items-center justify-center overflow-hidden shrink-0">
+          <div class="wiggle-pause-animate scale-125 origin-center w-10 h-7 bg-wedding-red rounded-[3px] relative border border-red-800 shadow-md flex items-center justify-center overflow-hidden shrink-0">
             <div class="absolute top-0 left-0 w-full h-[55%] border-b border-red-900 bg-red-700" style="clip-path: polygon(0 0, 100% 0, 50% 100%);"></div>
             <span class="text-[10px] text-wedding-gold z-10 font-bold mt-1.5 drop-shadow-xs">囍</span>
           </div>
@@ -1155,7 +1155,7 @@
     init3DAlbum();
 
     // ==============================================
-    // SỔ LÒ XO NHẬT KÝ YÊU THƯƠNG
+    // SỔ LÒ XO NHẬT KÝ YÊU THƯƠNG: TỰ ĐỘNG NẠP CÁC ẢNH CÓ TÊN NK_
     // ==============================================
     function initNkBookSlider() {
       const wrapper = document.getElementById('nkSliderWrapper');
@@ -1174,40 +1174,111 @@
         "Hành trình tình yêu nở hoa kết trái 🌹"
       ];
 
-      const fallbacks = [
-        { src: './TUYEN_LAN_2.jpg', quote: 'Nụ cười rạng rỡ ngày đầu gặp gỡ ✨' },
-        { src: './TUYEN_LAN_3.jpg', quote: 'Cùng nhau bước qua thanh xuân 💌' },
-        { src: './TUYEN_LAN_13.JPG', quote: 'Bình yên là khi có anh và em kề bên 🌿' },
-        { src: './TUYEN_LAN_6.jpg', quote: 'Nắm tay nhau đi hết trọn cuộc đời 💍' }
-      ];
+      const maxScan = 30; // Quét từ NK_1 đến NK_30
+      let scanned = 0;
+      const foundPhotos = [];
+      let isBookSetupDone = false;
 
-      fallbacks.forEach(item => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `
-          <div class="bg-white p-2 pb-3 rounded-lg shadow-sm border border-amber-100 img-fade-zoom cursor-pointer">
-            <img src="${item.src}" onerror="this.src='https://placehold.co/300x400/FFFDF9/7D0B14?text=Kỷ+Niệm'" class="w-full aspect-[3/4] object-cover rounded" alt="Kỷ niệm">
-            <p class="font-serif italic text-[11px] text-center text-gray-700 mt-2 font-semibold">"${item.quote}"</p>
-          </div>
-        `;
-        slide.querySelector('img').onclick = (e) => {
-          e.stopPropagation();
-          openLightbox(e.target.currentSrc || e.target.src);
-        };
-        wrapper.appendChild(slide);
-      });
+      function setupBookSwiper() {
+        if (isBookSetupDone) return;
+        isBookSetupDone = true;
 
-      if (typeof Swiper !== 'undefined') {
-        new Swiper(".book-slider", {
-          effect: "creative",
-          grabCursor: true,
-          loop: true,
-          creativeEffect: {
-            prev: { shadow: false, origin: "left center", translate: [0, 0, -10], rotate: [0, -100, 0] },
-            next: { origin: "left center", translate: [0, 0, 0], rotate: [0, 0, 0] }
+        if (foundPhotos.length === 0) {
+          // Dự phòng nếu chưa có ảnh NK_: Nạp sẵn template ảnh định dạng NK_
+          for (let k = 1; k <= 6; k++) {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            const quoteText = quotes[(k - 1) % quotes.length];
+            slide.innerHTML = `
+              <div class="bg-white p-2 pb-3 rounded-lg shadow-sm border border-amber-100 img-fade-zoom cursor-pointer">
+                <img src="./NK_${k}.jpg" onerror="this.src='./NK_${k}.JPG'; this.onerror=function(){this.src='./TUYEN_LAN_${((k - 1) % 10) + 1}.jpg';}" class="w-full aspect-[3/4] object-cover rounded" alt="Nhật ký ${k}">
+                <p class="font-serif italic text-[11px] text-center text-gray-700 mt-2 font-semibold">"${quoteText}"</p>
+              </div>
+            `;
+            const img = slide.querySelector('img');
+            img.onclick = (e) => {
+              e.stopPropagation();
+              openLightbox(img.currentSrc || img.src);
+            };
+            wrapper.appendChild(slide);
           }
-        });
+        } else {
+          foundPhotos.sort((a, b) => a.index - b.index);
+          wrapper.innerHTML = '';
+          foundPhotos.forEach(item => wrapper.appendChild(item.slide));
+        }
+
+        if (typeof Swiper !== 'undefined') {
+          new Swiper(".book-slider", {
+            effect: "creative",
+            grabCursor: true,
+            loop: wrapper.children.length > 1,
+            autoplay: { delay: 3800, disableOnInteraction: true },
+            creativeEffect: {
+              prev: { shadow: false, origin: "left center", translate: [0, 0, -10], rotate: [0, -100, 0] },
+              next: { origin: "left center", translate: [0, 0, 0], rotate: [0, 0, 0] }
+            }
+          });
+        }
+        setTimeout(attachLightboxToImages, 300);
       }
+
+      for (let i = 1; i <= maxScan; i++) {
+        const pad2 = String(i).padStart(2, '0');
+        const pad3 = String(i).padStart(3, '0');
+        const candidateUrls = [
+          `./NK_${i}.jpg`,
+          `./NK_${i}.JPG`,
+          `./NK_${i}.png`,
+          `./NK_${i}.jpeg`,
+          `./NK_${pad2}.jpg`,
+          `./NK_${pad2}.JPG`,
+          `./NK_${pad3}.jpg`,
+          `./NK_${pad3}.JPG`
+        ];
+
+        let extIndex = 0;
+        const testImg = new Image();
+
+        function tryNext() {
+          if (extIndex < candidateUrls.length) {
+            testImg.src = candidateUrls[extIndex++];
+          } else {
+            scanned++;
+            if (scanned >= maxScan) setupBookSwiper();
+          }
+        }
+
+        testImg.onload = function() {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          const quoteText = quotes[(i - 1) % quotes.length];
+          slide.innerHTML = `
+            <div class="bg-white p-2 pb-3 rounded-lg shadow-sm border border-amber-100 img-fade-zoom cursor-pointer">
+              <img src="${this.src}" class="w-full aspect-[3/4] object-cover rounded" alt="Nhật ký ${i}">
+              <p class="font-serif italic text-[11px] text-center text-gray-700 mt-2 font-semibold">"${quoteText}"</p>
+            </div>
+          `;
+          const img = slide.querySelector('img');
+          img.onclick = (e) => {
+            e.stopPropagation();
+            openLightbox(img.currentSrc || img.src);
+          };
+          foundPhotos.push({ index: i, slide: slide });
+          scanned++;
+          if (scanned >= maxScan) setupBookSwiper();
+        };
+
+        testImg.onerror = function() {
+          tryNext();
+        };
+
+        tryNext();
+      }
+
+      setTimeout(() => {
+        if (!isBookSetupDone) setupBookSwiper();
+      }, 1500);
     }
 
     initNkBookSlider();
